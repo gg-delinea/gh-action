@@ -1,0 +1,60 @@
+---
+name: integration
+on:
+  pull_request:
+  # push:
+  #   branches:
+  #     - main
+  # tags:
+  #   - v*
+  workflow_call:
+
+  workflow_dispatch:
+    inputs:
+      setenv:
+        description: setenv (output to envfile)
+        default: true
+        type: boolean
+        required: false
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: dsv-github-action
+        uses: DelineaXPM/dsv-github-action@v1.0.6
+
+        with:
+          domain: ${{ secrets.DSV_SERVER }}
+          clientId: ${{ secrets.DSV_CLIENT_ID }}
+          clientSecret: ${{ secrets.DSV_CLIENT_SECRET }}
+          retrieve: |
+            [
+             {"secretPath": "dsv-github-action:secret-01", "secretKey": "value1", "outputVariable": "RETURN_VALUE_1"},
+             {"secretPath": "dsv-github-action:secret-01", "secretKey": "value2", "outputVariable": "RETURN_VALUE_2"}
+            ]
+      - name: validate-first-value
+        if: always()
+        run: |
+          if [ "${{ env.RETURN_VALUE_1 }}" == "here is a secret" ]; then
+              echo "✅ test value is matched"
+              exit 0
+          else
+              echo "::error ❌ mismatch, failed to return test value"
+              exit 1
+          fi
+      - name: validate-second-value
+        if: always()
+        run: |
+          if [ "${{ env.RETURN_VALUE_2 }}" == "this is a secondary secret" ]; then
+              echo "✅ test value is matched"
+              exit 0
+          else
+              echo -e "::error ❌ mismatch, failed to return test value"
+              exit 1
+          fi
