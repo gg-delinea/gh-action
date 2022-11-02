@@ -44,20 +44,6 @@ jobs:
       - name: validate-first-value
         if: always()
         run: |
-          if [ "${{ env.RETURN_VALUE_1 }}" == "${{ secrets.DSV_EXPECTED_VALUE_1 }}" ]; then
-              echo "✅ test value is matched"
-              exit 0
-          else
-              echo "::error ❌ mismatch, failed to return test value"
-              exit 1
-          fi
-      - name: validate-second-value
-        if: always()
-        run: |
-          if [ "${{ env.RETURN_VALUE_2 }}" == "${{ secrets.DSV_EXPECTED_VALUE_2 }}" ]; then
-              echo "✅ test value is matched"
-              exit 0
-          else
-              echo -e "::error ❌ mismatch, failed to return test value"
-              exit 1
-          fi
+                  "This is a secret value you shouldn't echo 👉 ${{ env.RETURN_VALUE_1 }}"
+                      exit 1
+                  fi
