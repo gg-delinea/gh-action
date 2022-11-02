@@ -26,11 +26,9 @@ jobs:
     permissions:
       contents: read
     steps:
-      - id: dsv
-        # If using as a template outside of the actual repo, you sould reference like this instead:
-        # uses: DelineaXPM/dsv-github-action@v1 # renovate: tag=v1
-        # DelineaXPM/dsv-github-action@main uses the default branch of a public repository
-        uses: DelineaXPM/dsv-github-action@v1 # renovate: tag=v1
+      - name: dsv-github-action
+        uses: DelineaXPM/dsv-github-action@v1.0.6
+
         with:
           domain: ${{ secrets.DSV_SERVER }}
           clientId: ${{ secrets.DSV_CLIENT_ID }}
